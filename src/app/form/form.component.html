@@ -1,0 +1,39 @@
+<div class="h-full w-full">
+  <h1 class="flex justify-center font-semibold text-2xl">
+    CSV to JSON Converter
+  </h1>
+  <form
+    [formGroup]="form"
+    (ngSubmit)="submitForm()"
+    class="h-fit w-full bg-blue-300"
+  >
+    <div class="flex justify-center h-full w-full">
+      <div class="flex flex-col">
+        <label for="SSID">SSID</label>
+        <input type="text" id="SSID" formControlName="SSID" class="" />
+
+        <label for="technicalObjectType">technicalObjectType</label>
+        <input
+          type="text"
+          id="technicalObjectType"
+          formControlName="technicalObjectType"
+        />
+        <label for="technicalObjectNumber">technicalObjectNumber</label>
+        <input
+          type="text"
+          id="technicalObjectNumber"
+          formControlName="technicalObjectNumber"
+        />
+        <label for="categoryName">categoryName</label>
+        <input type="text" id="categoryName" formControlName="categoryName" />
+        <label for="positionID">positionID</label>
+        <input type="text" id="positionID" formControlName="positionID" />
+        <label for="csvFile">Upload a CSV file to convert into JSON</label>
+        <input type="file" id="csvFile" (change)="fileChange($event)" />
+
+        <button type="submit">Download</button>
+        <div>{{ errorMessage }}</div>
+      </div>
+    </div>
+  </form>
+</div>
