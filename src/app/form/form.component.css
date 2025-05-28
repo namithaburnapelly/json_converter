@@ -1,0 +1,9 @@
+.file-icon {
+  font-size: small;
+  color: gray;
+}
+
+.main-container,
+label {
+  background-color: rgb(252, 251, 249);
+}

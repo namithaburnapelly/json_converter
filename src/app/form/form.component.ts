@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 
 @Component({
@@ -6,6 +6,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
   standalone: false,
   templateUrl: './form.component.html',
   styleUrl: './form.component.css',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class FormComponent {
   form: FormGroup;
@@ -18,9 +19,9 @@ export class FormComponent {
     this.form = this.fb.group({
       SSID: ['IAMCLNT100', Validators.required],
       technicalObjectType: ['EQUI', Validators.required],
-      technicalObjectNumber: ['10232266', Validators.required],
+      technicalObjectNumber: ['', Validators.required],
       categoryName: ['M', Validators.required],
-      positionID: ['0beef3943722433cb705243779478d49', Validators.required],
+      positionID: ['', Validators.required],
     });
   }
 

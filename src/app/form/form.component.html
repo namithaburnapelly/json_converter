@@ -1,39 +1,120 @@
-<div class="h-full w-full">
-  <h1 class="flex justify-center font-semibold text-2xl">
+<div class="h-full w-full main-container">
+  <h1 class="flex justify-center font-semibold text-2xl bg-orange-100 p-3">
     CSV to JSON Converter
   </h1>
-  <form
-    [formGroup]="form"
-    (ngSubmit)="submitForm()"
-    class="h-fit w-full bg-blue-300"
-  >
-    <div class="flex justify-center h-full w-full">
-      <div class="flex flex-col">
-        <label for="SSID">SSID</label>
-        <input type="text" id="SSID" formControlName="SSID" class="" />
+  <div class="w-full h-[1px] bg-orange-200"></div>
+  <div class="flex justify-center items-center">
+    <form [formGroup]="form" (ngSubmit)="submitForm()">
+      <div class="flex flex-col pt-10 items-center gap-y-3">
+        <div
+          class="flex flex-col gap-y-6 w-full max-w-[340px] lg:max-w-[380px]"
+        >
+          <!-- ssid -->
+          <div class="relative flex flex-col">
+            <label
+              for="SSID"
+              class="text-xs font-bold absolute z-10 left-3 -top-2 px-1"
+              >SSID</label
+            >
+            <input
+              type="text"
+              id="SSID"
+              formControlName="SSID"
+              placeholder="Enter SSID"
+              class="placeholder:text-gray-400 border border-orange-200 bg-white rounded px-4 py-3 focus:outline-none focus:ring-2 focus:ring-orange-200 focus:border-transparent focus:ring-offset-0 autofill:bg-white autofill:text-black autofill:shadow-[inset_0_0_0px_1000px_white]"
+            />
+          </div>
 
-        <label for="technicalObjectType">technicalObjectType</label>
-        <input
-          type="text"
-          id="technicalObjectType"
-          formControlName="technicalObjectType"
-        />
-        <label for="technicalObjectNumber">technicalObjectNumber</label>
-        <input
-          type="text"
-          id="technicalObjectNumber"
-          formControlName="technicalObjectNumber"
-        />
-        <label for="categoryName">categoryName</label>
-        <input type="text" id="categoryName" formControlName="categoryName" />
-        <label for="positionID">positionID</label>
-        <input type="text" id="positionID" formControlName="positionID" />
-        <label for="csvFile">Upload a CSV file to convert into JSON</label>
-        <input type="file" id="csvFile" (change)="fileChange($event)" />
+          <!-- Technical object type -->
+          <div class="relative flex flex-col">
+            <label
+              for="technicalObjectType"
+              class="text-xs font-bold absolute z-10 left-3 -top-2 px-1"
+              >Technical Object Type</label
+            >
+            <input
+              type="text"
+              id="technicalObjectType"
+              formControlName="technicalObjectType"
+              placeholder="Enter technical object type"
+              class="placeholder:text-gray-400 border border-orange-200 bg-white rounded px-4 py-3 focus:outline-none focus:ring-2 focus:ring-orange-200 focus:border-transparent focus:ring-offset-0 autofill:bg-white autofill:text-black autofill:shadow-[inset_0_0_0px_1000px_white]"
+            />
+          </div>
 
-        <button type="submit">Download</button>
+          <!-- Technical object Number -->
+          <div class="relative flex flex-col">
+            <label
+              for="technicalObjectNumber"
+              class="text-xs font-bold absolute z-10 left-3 -top-2 px-1"
+              >Technical Object Number</label
+            >
+            <input
+              type="text"
+              id="technicalObjectNumber"
+              formControlName="technicalObjectNumber"
+              placeholder="Enter technical object number"
+              class="placeholder:text-gray-400 border border-orange-200 bg-white rounded px-4 py-3 focus:outline-none focus:ring-2 focus:ring-orange-200 focus:border-transparent focus:ring-offset-0 autofill:bg-white autofill:text-black autofill:shadow-[inset_0_0_0px_1000px_white]"
+            />
+          </div>
+
+          <!-- category name -->
+          <div class="relative flex flex-col">
+            <label
+              for="categoryName"
+              class="text-xs font-bold absolute z-10 left-3 -top-2 px-1"
+              >Category Name</label
+            >
+            <input
+              type="text"
+              id="categoryName"
+              formControlName="categoryName"
+              placeholder="Enter category name"
+              class="placeholder:text-gray-400 border border-orange-200 bg-white rounded px-4 py-3 focus:outline-none focus:ring-2 focus:ring-orange-200 focus:border-transparent focus:ring-offset-0 autofill:bg-white autofill:text-black autofill:shadow-[inset_0_0_0px_1000px_white]"
+            />
+          </div>
+
+          <!-- positionn id -->
+          <div class="relative flex flex-col">
+            <label
+              for="positionID"
+              class="text-xs font-bold absolute z-10 left-3 -top-2 px-1"
+              >Position ID</label
+            >
+            <input
+              type="text"
+              id="positionID"
+              formControlName="positionID"
+              placeholder="Enter position ID details"
+              class="placeholder:text-gray-400 border border-orange-200 bg-white rounded px-4 py-3 focus:outline-none focus:ring-2 focus:ring-orange-200 focus:border-transparent focus:ring-offset-0 autofill:bg-white autofill:text-black autofill:shadow-[inset_0_0_0px_1000px_white]"
+            />
+          </div>
+
+          <!-- file upload -->
+          <div class="flex flex-col gap-y-1">
+            <label for="csvFile" class="text-sm font-semibold"
+              >Upload a CSV file to convert into JSON</label
+            >
+
+            <div
+              class="flex items-center justify-center border border-orange-200 bg-white rounded py-4 px-2 gap-x-3"
+            >
+              <input
+                type="file"
+                id="csvFile"
+                (change)="fileChange($event)"
+                class="w-[95%] overflow-hidden file:mr-4 file:rounded-full file:border-0 file:bg-orange-50 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-orange-400 hover:file:bg-orange-100"
+              />
+            </div>
+          </div>
+        </div>
+        <button
+          type="submit"
+          class="w-50 px-3 py-2 bg-orange-400 text-white rounded font-semibold"
+        >
+          Download
+        </button>
         <div>{{ errorMessage }}</div>
       </div>
-    </div>
-  </form>
+    </form>
+  </div>
 </div>
