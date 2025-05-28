@@ -13,6 +13,7 @@ export class FormComponent {
   private fileContents: string = '';
   private filename: string | null = null;
   errorMessage: string = '';
+  isLoading: boolean = false;
 
   private fb = inject(FormBuilder);
   constructor() {
@@ -39,46 +40,63 @@ export class FormComponent {
     reader.readAsText(file);
   }
 
-  submitForm() {
+  async submitForm() {
+    this.isLoading = true;
+
     if (!this.fileContents) {
+      this.isLoading = false;
       this.errorMessage = 'Select a csv file';
       return;
     }
 
-    const lines = this.fileContents
-      .split(/\r?\n/)
-      .filter((line) => line.trim() !== '');
+    try {
+      const lines = this.fileContents
+        .split(/\r?\n/)
+        .filter((line) => line.trim() !== '');
 
-    const headers = lines[0].split(',').map((h) => h.trim());
+      const headers = lines[0].split(',').map((h) => h.trim());
 
-    let data: any[] = [];
+      let data: any[] = [];
 
-    lines.slice(1).map((line: any) => {
-      const values = line.split(',');
-      const obj: any = {};
-      headers.forEach((header, _i) => {
-        const val = values[_i].trim();
-        obj[header] = this.convertIfValidTimestamp(val);
+      lines.slice(1).map((line: any) => {
+        const values = line.split(',');
+        const obj: any = {};
+        headers.forEach((header, _i) => {
+          const val = values[_i].trim();
+          obj[header] = this.convertIfValidTimestamp(val);
+        });
+        data.push(obj);
       });
-      data.push(obj);
-    });
 
-    const finaljsonData = {
-      ...this.form.value,
-      values: data,
-    };
+      const finaljsonData = {
+        ...this.form.value,
+        values: data,
+      };
 
-    console.log(finaljsonData);
-    const jsonData = JSON.stringify(finaljsonData, null, 2);
-    const blob = new Blob([jsonData], { type: 'application/json' });
+      // console.log(finaljsonData);
+      const jsonData = JSON.stringify(finaljsonData, null, 2);
+      const blob = new Blob([jsonData], { type: 'application/json' });
 
-    //downloadable link
-    const link = document.createElement('a');
-    link.href = URL.createObjectURL(blob);
-    link.download = `${this.filename}.json`;
-    link.click();
+      //downloadable link
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = `${this.filename}.json`;
 
-    URL.revokeObjectURL(link.href);
+      // Small delay to ensure UI updates (Angular change detection)
+      await new Promise((resolve) => setTimeout(resolve, 100));
+
+      link.click();
+
+      // Cleanup and hide loader after a short delay
+      setTimeout(() => {
+        URL.revokeObjectURL(link.href);
+        this.isLoading = false;
+      }, 1000);
+    } catch (err) {
+      this.errorMessage = 'An error occured while processing the file';
+      console.error(err);
+      this.isLoading = false;
+    }
   }
 
   isMilliSeconds(timestamp: number): boolean {
