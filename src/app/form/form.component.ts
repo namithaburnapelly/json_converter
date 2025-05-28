@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, inject } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 
 @Component({
@@ -16,7 +16,7 @@ export class FormComponent {
   isLoading: boolean = false;
 
   private fb = inject(FormBuilder);
-  constructor() {
+  constructor(private cdr: ChangeDetectorRef) {
     this.form = this.fb.group({
       SSID: ['IAMCLNT100', Validators.required],
       technicalObjectType: ['EQUI', Validators.required],
@@ -42,6 +42,7 @@ export class FormComponent {
 
   async submitForm() {
     this.isLoading = true;
+    this.cdr.detectChanges(); // forcing a manual change detection
 
     if (!this.fileContents) {
       this.isLoading = false;
@@ -91,6 +92,7 @@ export class FormComponent {
       setTimeout(() => {
         URL.revokeObjectURL(link.href);
         this.isLoading = false;
+        this.cdr.detectChanges(); // forcing a manual change detection
       }, 1000);
     } catch (err) {
       this.errorMessage = 'An error occured while processing the file';
