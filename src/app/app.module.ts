@@ -7,6 +7,7 @@ import { FormComponent } from './form/form.component';
 import { ReactiveFormsModule } from '@angular/forms';
 import { LoadingComponent } from './loading/loading.component';
 import { LucideAngularModule, Loader } from 'lucide-angular';
+import { ConversionService } from './service/conversion.service';
 
 @NgModule({
   declarations: [AppComponent, FormComponent, LoadingComponent],
@@ -16,7 +17,7 @@ import { LucideAngularModule, Loader } from 'lucide-angular';
     ReactiveFormsModule,
     LucideAngularModule.pick({ Loader }),
   ],
-  providers: [],
+  providers: [ConversionService],
   bootstrap: [AppComponent],
 })
 export class AppModule {}

@@ -1,5 +1,12 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, inject } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  inject,
+} from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { ConversionService } from '../service/conversion.service';
+import { TechnicalObjectData } from '../model/technical-object-data';
 
 @Component({
   selector: 'app-form',
@@ -16,7 +23,10 @@ export class FormComponent {
   isLoading: boolean = false;
 
   private fb = inject(FormBuilder);
-  constructor(private cdr: ChangeDetectorRef) {
+  private cdr = inject(ChangeDetectorRef);
+  private conversion = inject(ConversionService);
+
+  constructor() {
     this.form = this.fb.group({
       SSID: ['IAMCLNT100', Validators.required],
       technicalObjectType: ['EQUI', Validators.required],
@@ -40,7 +50,7 @@ export class FormComponent {
     reader.readAsText(file);
   }
 
-  async submitForm() {
+  submitForm() {
     this.isLoading = true;
     this.cdr.detectChanges(); // forcing a manual change detection
 
@@ -51,40 +61,19 @@ export class FormComponent {
     }
 
     try {
-      const lines = this.fileContents
-        .split(/\r?\n/)
-        .filter((line) => line.trim() !== '');
+      const valuesData = this.conversion.convertCsvToJson(this.fileContents);
 
-      const headers = lines[0].split(',').map((h) => h.trim());
-
-      let data: any[] = [];
-
-      lines.slice(1).map((line: any) => {
-        const values = line.split(',');
-        const obj: any = {};
-        headers.forEach((header, _i) => {
-          const val = values[_i].trim();
-          obj[header] = this.convertIfValidTimestamp(val);
-        });
-        data.push(obj);
-      });
-
-      const finaljsonData = {
+      const jsonData: TechnicalObjectData = {
         ...this.form.value,
-        values: data,
+        values: valuesData,
       };
 
-      // console.log(finaljsonData);
-      const jsonData = JSON.stringify(finaljsonData, null, 2);
-      const blob = new Blob([jsonData], { type: 'application/json' });
+      const blob = this.conversion.downloadJSON(jsonData);
 
       //downloadable link
       const link = document.createElement('a');
       link.href = URL.createObjectURL(blob);
       link.download = `${this.filename}.json`;
-
-      // Small delay to ensure UI updates (Angular change detection)
-      await new Promise((resolve) => setTimeout(resolve, 100));
 
       link.click();
 
@@ -93,39 +82,11 @@ export class FormComponent {
         URL.revokeObjectURL(link.href);
         this.isLoading = false;
         this.cdr.detectChanges(); // forcing a manual change detection
-      }, 1000);
+      }, 500);
     } catch (err) {
       this.errorMessage = 'An error occured while processing the file';
       console.error(err);
       this.isLoading = false;
     }
-  }
-
-  isMilliSeconds(timestamp: number): boolean {
-    return timestamp > 1e12;
-  }
-
-  isWithIn90Days(timestamp: number): boolean {
-    const date = this.isMilliSeconds(timestamp)
-      ? new Date(timestamp)
-      : new Date(timestamp * 1000);
-    const now = new Date();
-
-    const nientyDaysInMs = 90 * 24 * 60 * 60 * 1000;
-    const lowerBound = new Date(now.getTime() - nientyDaysInMs);
-    const upperBound = new Date(now.getTime() + nientyDaysInMs);
-
-    return date >= lowerBound && date <= upperBound;
-  }
-
-  convertIfValidTimestamp(value: string) {
-    const timestamp = Number(value);
-    if (this.isWithIn90Days(timestamp)) {
-      const date = this.isMilliSeconds(timestamp)
-        ? new Date(timestamp)
-        : new Date(timestamp * 1000);
-      return date.toISOString();
-    }
-    return value;
   }
 }
