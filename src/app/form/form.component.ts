@@ -42,8 +42,8 @@ export class FormComponent {
     if (!file) return;
 
     this.filename = file.name;
-    this.filename = this.filename.split('.')[0];
     this.filetype = this.filename.split('.')[1];
+    this.filename = this.filename.split('.')[0];
 
     const reader = new FileReader();
     reader.onload = () => {
