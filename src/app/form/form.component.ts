@@ -19,6 +19,7 @@ export class FormComponent {
   form: FormGroup;
   private fileContents: string = '';
   private filename: string | null = null;
+  private filetype: string | null = null;
   errorMessage: string = '';
   isLoading: boolean = false;
 
@@ -42,6 +43,7 @@ export class FormComponent {
 
     this.filename = file.name;
     this.filename = this.filename.split('.')[0];
+    this.filetype = this.filename.split('.')[1];
 
     const reader = new FileReader();
     reader.onload = () => {
@@ -51,16 +53,19 @@ export class FormComponent {
   }
 
   submitForm() {
-    this.isLoading = true;
-    this.cdr.detectChanges(); // forcing a manual change detection
-
-    if (!this.fileContents) {
-      this.isLoading = false;
+    if (this.form.invalid) {
+      this.errorMessage = 'Fill out the missing values';
+      return;
+    }
+    if (!this.fileContents || this.filetype !== 'csv') {
       this.errorMessage = 'Select a csv file';
       return;
     }
 
     try {
+      this.isLoading = true;
+      this.cdr.detectChanges(); // forcing a manual change detection
+
       const valuesData = this.conversion.convertCsvToJson(this.fileContents);
 
       const jsonData: TechnicalObjectData = {
