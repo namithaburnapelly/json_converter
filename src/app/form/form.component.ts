@@ -41,10 +41,13 @@ export class FormComponent implements OnDestroy {
   }
 
   fileChange(event: Event) {
-    const file = (event.target as HTMLInputElement).files?.[0];
-    if (!file) return;
-
     this.errorMessage = '';
+    const file = (event.target as HTMLInputElement).files?.[0];
+    if (!file) {
+      this.errorMessage = 'Select a csv file';
+      this.fileContents = '';
+      return;
+    }
 
     this.filename = file.name;
     this.filetype = this.filename.split('.')[1];
