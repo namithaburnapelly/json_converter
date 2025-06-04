@@ -3,6 +3,7 @@ import {
   ChangeDetectorRef,
   Component,
   inject,
+  OnDestroy,
 } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ConversionService } from '../service/conversion.service';
@@ -15,13 +16,15 @@ import { TechnicalObjectData } from '../model/technical-object-data';
   styleUrl: './form.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class FormComponent {
+export class FormComponent implements OnDestroy {
   form: FormGroup;
   private fileContents: string = '';
   private filename: string | null = null;
   private filetype: string | null = null;
   errorMessage: string = '';
+  previewMode: boolean = false;
   isLoading: boolean = false;
+  jsonData!: TechnicalObjectData;
 
   private fb = inject(FormBuilder);
   private cdr = inject(ChangeDetectorRef);
@@ -41,9 +44,15 @@ export class FormComponent {
     const file = (event.target as HTMLInputElement).files?.[0];
     if (!file) return;
 
+    this.errorMessage = '';
+
     this.filename = file.name;
     this.filetype = this.filename.split('.')[1];
     this.filename = this.filename.split('.')[0];
+
+    if (this.filetype !== 'csv') {
+      this.errorMessage = 'Select a csv file';
+    }
 
     const reader = new FileReader();
     reader.onload = () => {
@@ -52,7 +61,8 @@ export class FormComponent {
     reader.readAsText(file);
   }
 
-  submitForm() {
+  previewForm() {
+    this.previewMode = true;
     if (this.form.invalid) {
       this.errorMessage = 'Fill out the missing values';
       return;
@@ -63,17 +73,23 @@ export class FormComponent {
     }
 
     try {
-      this.isLoading = true;
-      this.cdr.detectChanges(); // forcing a manual change detection
-
       const valuesData = this.conversion.convertCsvToJson(this.fileContents);
 
-      const jsonData: TechnicalObjectData = {
+      this.jsonData = {
         ...this.form.value,
         values: valuesData,
       };
+    } catch (err) {
+      this.errorMessage = 'An error occured while processing the file';
+      console.error(err);
+    }
+  }
 
-      const blob = this.conversion.downloadJSON(jsonData);
+  DownloadForm() {
+    this.isLoading = true;
+    // this.cdr.detectChanges(); // forcing a manual change detection
+    try {
+      const blob = this.conversion.downloadJSON(this.jsonData);
 
       //downloadable link
       const link = document.createElement('a');
@@ -89,9 +105,17 @@ export class FormComponent {
         this.cdr.detectChanges(); // forcing a manual change detection
       }, 500);
     } catch (err) {
-      this.errorMessage = 'An error occured while processing the file';
+      this.errorMessage = 'Unexpected Error occured. Try again.';
       console.error(err);
       this.isLoading = false;
     }
+  }
+
+  CancelForm() {
+    this.previewMode = false;
+  }
+
+  ngOnDestroy(): void {
+    this.previewMode = false;
   }
 }

@@ -8,9 +8,15 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { LoadingComponent } from './loading/loading.component';
 import { LucideAngularModule, Loader } from 'lucide-angular';
 import { ConversionService } from './service/conversion.service';
+import { PrettyJsonPipePipe } from './pretty-json-pipe.pipe';
 
 @NgModule({
-  declarations: [AppComponent, FormComponent, LoadingComponent],
+  declarations: [
+    AppComponent,
+    FormComponent,
+    LoadingComponent,
+    PrettyJsonPipePipe,
+  ],
   imports: [
     BrowserModule,
     AppRoutingModule,
