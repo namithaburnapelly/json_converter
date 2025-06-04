@@ -62,7 +62,6 @@ export class FormComponent implements OnDestroy {
   }
 
   previewForm() {
-    this.previewMode = true;
     if (this.form.invalid) {
       this.errorMessage = 'Fill out the missing values';
       return;
@@ -79,6 +78,7 @@ export class FormComponent implements OnDestroy {
         ...this.form.value,
         values: valuesData,
       };
+      this.previewMode = true;
     } catch (err) {
       this.errorMessage = 'An error occured while processing the file';
       console.error(err);
